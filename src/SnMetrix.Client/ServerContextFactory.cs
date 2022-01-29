@@ -58,7 +58,7 @@ namespace SnMetrix.Client
             };
 
             server.Authentication.AccessToken = await _tokenStore.GetTokenAsync(server,
-                _options.ClientId, _options.Secret);
+                _options.Authentication.ClientId, _options.Authentication.ClientSecret);
 
             return server;
         }

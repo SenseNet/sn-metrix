@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SenseNet.Extensions.DependencyInjection;
+using SenseNet.IO.Implementations;
 using SnMetrix.Client;
 
 namespace SnMetrix.ConsoleApp
@@ -33,12 +34,15 @@ namespace SnMetrix.ConsoleApp
                     })
                     // general sensenet services
                     .AddSenseNetClientTokenStore()
+                    .AddContentFlow<FsReader, RepositoryWriter>()
                     // feature-specific services
                     .AddSingleton<IServerContextFactory, ServerContextFactory>()
                     .AddSingleton<InitialStructureBuilder>()
                     // configure feature-specific options
-                    .Configure<RepositoryOptions>(hb.Configuration.GetSection("Repository"))
-                    .Configure<InitialStructureBuilderOptions>(hb.Configuration.GetSection("InitialImport"))
+                    .Configure<InitialStructureBuilderOptions>(hb.Configuration.GetSection("InitialStructure"))
+                    .Configure<RepositoryOptions>(hb.Configuration.GetSection("InitialImport:RepositoryWriter"))
+                    .Configure<FsReaderArgs>(hb.Configuration.GetSection("InitialImport:FileSystemReader"))
+                    .Configure<RepositoryWriterArgs>(hb.Configuration.GetSection("InitialImport:RepositoryWriter"))
                 );
     }
 }

@@ -1,8 +1,9 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SenseNet.Client;
+using SenseNet.IO;
 
 namespace SnMetrix.Client
 {
@@ -14,13 +15,17 @@ namespace SnMetrix.Client
     public class InitialStructureBuilder : IStructureBuilder
     {
         private readonly IServerContextFactory _serverFactory;
+        private readonly IContentFlow _contentFlow;
         private readonly ILogger<InitialStructureBuilder> _logger;
         private readonly InitialStructureBuilderOptions _options;
 
-        public InitialStructureBuilder(IServerContextFactory serverFactory, IOptions<InitialStructureBuilderOptions> options,
+        public InitialStructureBuilder(IServerContextFactory serverFactory,
+            IContentFlow contentFlow,
+            IOptions<InitialStructureBuilderOptions> options,
             ILogger<InitialStructureBuilder> logger)
         {
             _serverFactory = serverFactory;
+            _contentFlow = contentFlow;
             _logger = logger;
             _options = options.Value;
         }
@@ -28,15 +33,21 @@ namespace SnMetrix.Client
         public async Task BuildAsync()
         {
             var server = await _serverFactory.GetServerAsync();
-            var coll = (await Content.LoadCollectionAsync("/Root/Content/SampleWorkspace/Memos", server)
-                .ConfigureAwait(false)).ToArray();
 
-            foreach (var content in coll)
+            // import initial structure
+            if (_options.Overwrite)
+                await _contentFlow.TransferAsync(new Progress<TransferState>());
+            
+            // perform manual initial structure building tasks (e.g. duplicating imported content)
+            for (var i = 0; i < 10; i++)
             {
-                _logger.LogTrace($"CONTENT: {content.Path}");
-            }
+                var content = Content.CreateNew("/Root/Content/MetrixWorkspace/flatcontent", "FlatContent",
+                    Guid.NewGuid().ToString(), null, server);
 
-            //TODO: import initial structure from _options.ImportFolderPath
+                await content.SaveAsync();
+
+                _logger.LogTrace($"Content {content.Path} saved.");
+            }
         }
     }
 }

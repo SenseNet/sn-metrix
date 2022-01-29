@@ -1,9 +1,10 @@
 ﻿using System;
+using SenseNet.IO.Implementations;
 
 namespace SnMetrix.Client
 {
     public class InitialStructureBuilderOptions
     {
-        public string ImportFolderPath { get; set; }
+        public bool Overwrite { get; set; }
     }
 }
