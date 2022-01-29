@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnMetrix.ConsoleApp", "SnMetrix.ConsoleApp\SnMetrix.ConsoleApp.csproj", "{0BBF6CC6-CE8A-411F-A099-A2A6E160FDF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnMetrix.Client", "SnMetrix.Client\SnMetrix.Client.csproj", "{F38244A7-DBB5-4FFE-8432-740A2ECB19F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0BBF6CC6-CE8A-411F-A099-A2A6E160FDF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BBF6CC6-CE8A-411F-A099-A2A6E160FDF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BBF6CC6-CE8A-411F-A099-A2A6E160FDF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BBF6CC6-CE8A-411F-A099-A2A6E160FDF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F38244A7-DBB5-4FFE-8432-740A2ECB19F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F38244A7-DBB5-4FFE-8432-740A2ECB19F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F38244A7-DBB5-4FFE-8432-740A2ECB19F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F38244A7-DBB5-4FFE-8432-740A2ECB19F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A1890D5B-DBBC-4044-8E08-A4E407C27281}
+	EndGlobalSection
+EndGlobal
