@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using SenseNet.Extensions.DependencyInjection;
 using SenseNet.IO.Implementations;
 using SnMetrix.Client;
+using SnMetrix.Client.Plugins;
 
 namespace SnMetrix.ConsoleApp
 {
@@ -14,10 +15,20 @@ namespace SnMetrix.ConsoleApp
         static async Task Main(string[] args)
         {
             using var host = CreateHostBuilder(args).Build();
-            
-            var structureBuilder = host.Services.GetService<InitialStructureBuilder>();
 
+            var logger = host.Services.GetService<ILogger<Program>>();
+
+            logger.LogInformation("Building initial structure.");
+            
+            // build initial structure
+            var structureBuilder = host.Services.GetService<InitialStructureBuilder>();
             await structureBuilder.BuildAsync();
+
+            logger.LogInformation("Starting measurement operation.");
+
+            // perform measurement
+            var plugin = host.Services.GetService<IMetrixPlugin>();
+            await plugin.ExecuteAsync();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -38,6 +49,7 @@ namespace SnMetrix.ConsoleApp
                     // feature-specific services
                     .AddSingleton<IServerContextFactory, ServerContextFactory>()
                     .AddSingleton<InitialStructureBuilder>()
+                    .AddSingleton<IMetrixPlugin, FlatContentImporter>()
                     // configure feature-specific options
                     .Configure<InitialStructureBuilderOptions>(hb.Configuration.GetSection("InitialStructure"))
                     .Configure<RepositoryOptions>(hb.Configuration.GetSection("InitialImport:RepositoryWriter"))

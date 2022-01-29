@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SenseNet.Client;
 using SenseNet.IO;
 
 namespace SnMetrix.Client
@@ -32,22 +31,14 @@ namespace SnMetrix.Client
 
         public async Task BuildAsync()
         {
-            var server = await _serverFactory.GetServerAsync();
-
             // import initial structure
             if (_options.Overwrite)
                 await _contentFlow.TransferAsync(new Progress<TransferState>());
             
-            // perform manual initial structure building tasks (e.g. duplicating imported content)
-            for (var i = 0; i < 10; i++)
-            {
-                var content = Content.CreateNew("/Root/Content/MetrixWorkspace/flatcontent", "FlatContent",
-                    Guid.NewGuid().ToString(), null, server);
+            // perform additional structure building tasks (e.g. duplicating imported content)
+            //var server = _serverFactory.GetServerAsync().ConfigureAwait(false);
 
-                await content.SaveAsync();
-
-                _logger.LogTrace($"Content {content.Path} saved.");
-            }
+            _logger.LogInformation("Building initial structure is complete.");
         }
     }
 }
