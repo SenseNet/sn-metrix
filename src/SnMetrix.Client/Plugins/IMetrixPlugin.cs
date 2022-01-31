@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace SnMetrix.Client.Plugins
 {
     public interface IMetrixPlugin
     {
-        Task ExecuteAsync();
+        int OperationCount { get; }
+        int MaxDegreeOfParallelism { get; }
+
+        Task ExecuteAsync(IProgress<(int, TimeSpan)> progress);
     }
 }
