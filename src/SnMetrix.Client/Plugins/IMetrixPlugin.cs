@@ -8,6 +8,8 @@ namespace SnMetrix.Client.Plugins
         int OperationCount { get; }
         int MaxDegreeOfParallelism { get; }
 
+        Task PrepareAsync();
         Task ExecuteAsync(IProgress<(int, TimeSpan)> progress);
+        Task CleanupAsync();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -30,6 +31,20 @@ namespace SnMetrix.Client.Plugins
         private IProgress<(int, TimeSpan)> _progress;
         private ServerContext _server;
 
+        public async Task PrepareAsync()
+        {
+            _server = await _serverFactory.GetServerAsync();
+
+            if (await Content.ExistsAsync(_options.Container, _server))
+                return;
+
+            var parentPath = RepositoryPath.GetParentPath(_options.Container);
+            var name = RepositoryPath.GetFileName(_options.Container);
+            var content = Content.CreateNew(parentPath, "", name);
+
+            await content.SaveAsync();
+        }
+
         public async Task ExecuteAsync(IProgress<(int, TimeSpan)> progress)
         {
             _progress = progress;
@@ -43,6 +58,11 @@ namespace SnMetrix.Client.Plugins
 
             worker.Complete();
             worker.Completion.Wait();
+        }
+
+        public async Task CleanupAsync()
+        {
+            await Content.DeleteAsync(_options.Container, true, CancellationToken.None, _server);
         }
 
         private async Task Work(int index)

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SenseNet.Client;
 using SenseNet.Extensions.DependencyInjection;
 using SenseNet.IO.Implementations;
 using SnMetrix.Client;
@@ -19,17 +20,15 @@ namespace SnMetrix.ConsoleApp
         {
             using var host = CreateHostBuilder(args).Build();
 
-            var logger = host.Services.GetService<ILogger<Program>>();
-
-            logger.LogInformation("Building initial structure.");
             // build initial structure
-            var structureBuilder = host.Services.GetService<InitialStructureBuilder>();
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
+            var factory = host.Services.GetRequiredService<IServerContextFactory>();
+            var structureBuilder = host.Services.GetRequiredService<InitialStructureBuilder>();
+            await EnsureInitialStructureAsync(structureBuilder, logger, factory);
             await structureBuilder.BuildAsync();
 
-            logger.LogInformation("Starting measurement operation.");
-
             // perform measurement
-            var plugin = host.Services.GetService<IMetrixPlugin>();
+            var plugin = host.Services.GetRequiredService<IMetrixPlugin>();
             var times = new List<TimeSpan>();
             var progress = new Progress<(int value, TimeSpan duration)>(progressValue =>
             {
@@ -37,22 +36,40 @@ namespace SnMetrix.ConsoleApp
                 times.Add(progressValue.duration);
             });
 
+            logger.LogInformation("Preparing measurement operation.");
+            await plugin.PrepareAsync();
+
+            logger.LogInformation("Starting measurement operation.");
             var start = DateTime.UtcNow;
             await plugin.ExecuteAsync(progress);
-            var executiontime = DateTime.UtcNow - start;
-            var cps = 1.0d * plugin.OperationCount * TimeSpan.TicksPerSecond / executiontime.Ticks;
+            var executionTime = DateTime.UtcNow - start;
+            var cps = 1.0d * plugin.OperationCount * TimeSpan.TicksPerSecond / executionTime.Ticks;
 
             var avgTicks = times.Select(x=>x.Ticks).Sum() / times.Count;
             var avgTime = TimeSpan.FromTicks(avgTicks);
             Console.WriteLine("-------------------------------------------");
             Console.WriteLine($"Content imported:            {plugin.OperationCount}");
             Console.WriteLine($"Max degree of parallelism:   {plugin.MaxDegreeOfParallelism}");
-            Console.WriteLine($"Execution time (sec):        {executiontime.TotalSeconds}");
+            Console.WriteLine($"Execution time (sec):        {executionTime.TotalSeconds}");
             Console.WriteLine($"CPS:                         {cps}");
             Console.WriteLine($"Average response time (sec): {avgTime.TotalSeconds}");
             Console.WriteLine("-------------------------------------------");
 
+            logger.LogInformation("Cleaning up measurement operation.");
+            await plugin.CleanupAsync();
+
             logger.LogInformation("Measurement operation finished.");
+        }
+        private static async Task EnsureInitialStructureAsync(InitialStructureBuilder builder, ILogger logger, IServerContextFactory factory)
+        {
+            var server = await factory.GetServerAsync();
+
+            if ((await Content.QueryForAdminAsync("+Type:ContentType +Name:FlatContent",
+                    new[] { "Id", "Type", "Path" }, server: server).ConfigureAwait(false)).Any())
+                return;
+
+            logger.LogInformation("Building initial structure.");
+            await builder.BuildAsync();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
