@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="SenseNet.Client" Version="2.0.11.4" />
+    <PackageReference Include="SenseNet.Client" Version="2.0.11.5" />
     <PackageReference Include="SenseNet.IO" Version="1.0.1" />
   </ItemGroup>
 

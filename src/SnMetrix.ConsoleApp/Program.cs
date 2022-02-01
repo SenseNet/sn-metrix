@@ -44,15 +44,16 @@ namespace SnMetrix.ConsoleApp
                         logging.AddFile("Logs/sn-metrix-{Date}.txt", LogLevel.Trace);
                     })
                     // general sensenet services
-                    .AddSenseNetClientTokenStore()
+                    .AddSenseNetRepository(options =>
+                    {
+                        hb.Configuration.Bind("InitialImport:RepositoryWriter", options);
+                    })
                     .AddContentFlow<FsReader, RepositoryWriter>()
                     // feature-specific services
-                    .AddSingleton<IServerContextFactory, ServerContextFactory>()
                     .AddSingleton<InitialStructureBuilder>()
                     .AddSingleton<IMetrixPlugin, FlatContentImporter>()
                     // configure feature-specific options
                     .Configure<InitialStructureBuilderOptions>(hb.Configuration.GetSection("InitialStructure"))
-                    .Configure<RepositoryOptions>(hb.Configuration.GetSection("InitialImport:RepositoryWriter"))
                     .Configure<FsReaderArgs>(hb.Configuration.GetSection("InitialImport:FileSystemReader"))
                     .Configure<RepositoryWriterArgs>(hb.Configuration.GetSection("InitialImport:RepositoryWriter"))
                 );
