@@ -70,6 +70,20 @@ namespace SnMetrix.Client.Plugins
             var startTime = DateTime.UtcNow;
             var content = Content.CreateNew(_options.Container,
                 "FlatContent", $"{index}-{Guid.NewGuid()}", null, _server);
+
+            if (_options.FillContent)
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    var suffix = $"{i + 1:00}";
+                    content[$"MetrixShortText{suffix}"] = Guid.NewGuid();
+                    content[$"MetrixBoolean{suffix}"] = i % 2 == 0;
+                    content[$"MetrixInteger{suffix}"] = Guid.NewGuid().GetHashCode();
+                    content[$"MetrixReference{suffix}"] = "/Root";
+                    content[$"MetrixLongText{suffix}"] = new string((char) ('a' + i - 1), 1024);
+                }
+            }
+
             await content.SaveAsync();
             var duration = DateTime.UtcNow - startTime;
             _progress?.Report((Interlocked.Increment(ref _finishedCount), duration));
