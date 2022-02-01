@@ -35,11 +35,7 @@ namespace SnMetrix.Client.Plugins
         {
             _server = await _serverFactory.GetServerAsync();
 
-            //TODO: Use the commented instruction if the related bug is fixed (#1611)
-            //if (await Content.ExistsAsync(_options.Container, _server))
-            //    return;
-            if ((await Content.QueryForAdminAsync($"Path:{_options.Container}",
-                    new[] { "Id", "Type", "Path" }, server: _server).ConfigureAwait(false)).Any())
+            if (await Content.ExistsAsync(_options.Container, _server))
                 return;
 
             var parentPath = RepositoryPath.GetParentPath(_options.Container);
