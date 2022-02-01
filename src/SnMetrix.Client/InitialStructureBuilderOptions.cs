@@ -1,7 +1,4 @@
-﻿using System;
-using SenseNet.IO.Implementations;
-
-namespace SnMetrix.Client
+﻿namespace SnMetrix.Client
 {
     public class InitialStructureBuilderOptions
     {

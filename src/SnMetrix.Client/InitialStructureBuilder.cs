@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SenseNet.Client;
 using SenseNet.IO;
 
 namespace SnMetrix.Client
