@@ -25,7 +25,6 @@ namespace SnMetrix.ConsoleApp
             var factory = host.Services.GetRequiredService<IServerContextFactory>();
             var structureBuilder = host.Services.GetRequiredService<InitialStructureBuilder>();
             await EnsureInitialStructureAsync(structureBuilder, logger, factory);
-            await structureBuilder.BuildAsync();
 
             // perform measurement
             var plugin = host.Services.GetRequiredService<IMetrixPlugin>();
