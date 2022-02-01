@@ -35,12 +35,16 @@ namespace SnMetrix.Client.Plugins
         {
             _server = await _serverFactory.GetServerAsync();
 
-            if (await Content.ExistsAsync(_options.Container, _server))
+            //TODO: Use the commented instruction if the related bug is fixed (#1611)
+            //if (await Content.ExistsAsync(_options.Container, _server))
+            //    return;
+            if ((await Content.QueryForAdminAsync($"Path:{_options.Container}",
+                    new[] { "Id", "Type", "Path" }, server: _server).ConfigureAwait(false)).Any())
                 return;
 
             var parentPath = RepositoryPath.GetParentPath(_options.Container);
             var name = RepositoryPath.GetFileName(_options.Container);
-            var content = Content.CreateNew(parentPath, "", name);
+            var content = Content.CreateNew(parentPath, "Folder", name, server: _server);
 
             await content.SaveAsync();
         }
