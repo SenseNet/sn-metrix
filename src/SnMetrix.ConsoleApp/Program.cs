@@ -31,7 +31,7 @@ namespace SnMetrix.ConsoleApp
             var times = new List<TimeSpan>();
             var progress = new Progress<(int value, TimeSpan duration)>(progressValue =>
             {
-                Console.Write(" {0}/{1}  \r", progressValue.value, plugin.OperationCount);
+                Console.Write(" Progress: {0}/{1}  \r", progressValue.value, plugin.OperationCount);
                 times.Add(progressValue.duration);
             });
 
@@ -46,13 +46,15 @@ namespace SnMetrix.ConsoleApp
 
             var avgTicks = times.Select(x=>x.Ticks).Sum() / times.Count;
             var avgTime = TimeSpan.FromTicks(avgTicks);
-            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine("-----------------------------------");
+            Console.WriteLine("        MEASUREMENT RESULTS        ");
+            Console.WriteLine("-----------------------------------");
             Console.WriteLine($"Content imported:            {plugin.OperationCount}");
             Console.WriteLine($"Max degree of parallelism:   {plugin.MaxDegreeOfParallelism}");
-            Console.WriteLine($"Execution time (sec):        {executionTime.TotalSeconds}");
-            Console.WriteLine($"CPS:                         {cps}");
-            Console.WriteLine($"Average response time (sec): {avgTime.TotalSeconds}");
-            Console.WriteLine("-------------------------------------------");
+            Console.WriteLine($"Execution time (sec):        {executionTime.TotalSeconds:F2}");
+            Console.WriteLine($"CPS:                         {cps:F2}");
+            Console.WriteLine($"Average response time (sec): {avgTime.TotalSeconds:F4}");
+            Console.WriteLine("-----------------------------------");
 
             logger.LogInformation("Cleaning up measurement operation.");
             await plugin.CleanupAsync();
