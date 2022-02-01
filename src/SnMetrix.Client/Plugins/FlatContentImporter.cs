@@ -61,7 +61,7 @@ namespace SnMetrix.Client.Plugins
                 worker.Post(i);
 
             worker.Complete();
-            worker.Completion.Wait();
+            await worker.Completion;
         }
 
         public async Task CleanupAsync()
